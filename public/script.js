@@ -60,8 +60,14 @@ $(document).ready(function() {
     }
 
     function blur(backend) {
-        var data = context.getImageData(0, 0, canvas.width(), canvas.height());
-        var data = podifyImageData(data);
+        //var data = context.getImageData(0, 0, canvas.width(), canvas.height());
+        //var data = podifyImageData(data);
+	var data = canvas[0].toDataURL("image/png");
+	var data = {
+	    width: canvas.width(),
+	    height: canvas.height(),
+	    data: data
+	};
         var data = JSON.stringify(data);
         $.post('/blur/' + backend, data, function(newData) {
             var newData = JSON.parse(newData);

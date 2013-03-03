@@ -3,6 +3,8 @@ require 'logger'
 require 'sinatra'
 require 'base64'
 require 'matrix'
+require 'ffi'
+require 'RMagick'
 
 get '/' do
   redirect '/index.html'
@@ -24,10 +26,24 @@ def blur
   height = msg['height']
   data = msg['data']
 
+  data = translate_image_data(width, height, data)
+
   newdata = blur_ruby(width, height, data)
 
   response = { :data => newdata }
   JSON.generate(response)
+end
+
+def translate_image_data(width, height, data)
+  logger.info data
+  image = data.split(',')
+  image = Base64.decode64(image[1])
+
+  ilist = Magick::ImageList.new
+  ilist.from_blob(image)
+  ilist.display
+
+  Array.new(width * height) { 0 }
 end
 
 def blur_ruby(width, height, data)
@@ -74,5 +90,7 @@ def old_blur_ruby(width, height, data)
 end
 
 def blur_rust(width, height, data)
+
+
   data
 end
